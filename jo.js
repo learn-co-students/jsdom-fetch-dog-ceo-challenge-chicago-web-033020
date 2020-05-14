@@ -5,7 +5,6 @@ window.addEventListener("DOMContentLoaded", function() {
   console.log("DOM fully loaded and parsed")
   grabImages()
   grabBreeds()
-
 })
 
 // Dog Images
@@ -46,7 +45,7 @@ function grabBreeds() {
 // }
 
 function createBreeds(breeds) {
-  const dogList = document.getElementById("dog-breeds")
+  const list = document.getElementById("dog-breeds")
   // allDogs will have all general breeds
   // allDogBreeds is an empty array to address general breeds that have various subBreeds in it
   const allDogs = breeds
@@ -61,34 +60,41 @@ function createBreeds(breeds) {
       allDogBreeds.push(dogBreed)
     }
   }
-
   allDogBreeds.forEach(function(breed){
     let li = document.createElement("li")
     li.id = breed
     li.innerText = breed
-    dogList.append(li)
+    list.append(li)
     li.addEventListener("click", handleColor)
-  })
-
-  const dropdown = document.getElementById("breed-dropdown")
-  dropdown.addEventListener("change", function(event){
-    const choice = event.target.value
-    const filtered = allDogBreeds.filter(dog => (dog.charAt(0)== choice))
-    const ul = document.getElementById("dog-breeds")
-    while (ul.firstChild) ul.removeChild(ul.firstChild)
-    filtered.forEach(function(breed){
-      let li = document.createElement("li")
-      li.id = breed
-      li.innerText = breed
-      dogList.append(li)
-      li.addEventListener("click", handleColor)
-    })
   })
 
 }
 
+function updateBreedList(breeds) {
+  let ul = document.getElementById('dog-breeds');
+  removeChildren(ul);
+  breeds.forEach(breed => createBreed(breed));
+}
+
+function removeChildren(element) {
+  let child = element.lastElementChild;
+  while (child) {
+    element.removeChild(child);
+    child = element.lastElementChild;
+  }
+}
+
+function selectBreedsStartingWith(letter) {
+  updateBreedList(breeds.filter(breed => breed.startsWith(letter)));
+}
 
 
+function addBreedSelectListener() {
+  let breedDropdown = document.getElementById('breed-dropdown');
+  breedDropdown.addEventListener('change', function (event) {
+    selectBreedsStartingWith(event.target.value);
+  });
+}
 
 // changes color of the item that was clicked
 function handleColor(event) {
