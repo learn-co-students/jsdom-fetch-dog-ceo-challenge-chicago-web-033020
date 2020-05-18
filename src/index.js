@@ -1,71 +1,84 @@
 const imgUrl = "https://dog.ceo/api/breeds/image/random/4"
 const breedUrl = 'https://dog.ceo/api/breeds/list/all'
 
-function main() {
-    getDogImgs()
-    getDogBreeds()
-    filterDogBreed()
+const main = () => {
+    getImages()
+    getBreeds()
 }
 
-function getDogImgs() {
+const dogImg = (img) => {
+    let imgContainer = document.getElementById('dog-image-container')
+
+    let dogImg = document.createElement('img')
+    dogImg.src = img
+
+    imgContainer.appendChild(dogImg)
+}
+
+const getImages = () => {
     fetch(imgUrl)
-    .then(function(response) {
-        return response.json()
-    })
-    .then(function(object) {
-        let imageHolder = document.getElementById('dog-image-container');
-    
-        const imagesArray = object["message"]
-    
-        for (const image of imagesArray) {
-            let dogImage = document.createElement('img')
-            dogImage.src = image
-            imageHolder.appendChild(dogImage)
-        }
-    })
+        .then(response => {
+            return response.json()
+        })
+        .then(dogImgs => {
+            const dogImgsArray = dogImgs['message']
+            
+            for (const img of dogImgsArray) {
+                dogImg(img)
+            }
+        })
 }
 
-function getDogBreeds() {
-    fetch(breedUrl)
-    .then(function(response) {
-        return response.json()
-    })
-    .then(function(object) {
-        let breedList = document.getElementById('dog-breeds')
+const dogBreed = (breed) => {
+    let breedsList = document.getElementById('dog-breeds')
 
-        const breedsObj = object["message"]
+    let breedListItem = document.createElement('li')
+    breedListItem.innerText = breed
 
-        for (const breed in breedsObj) {
-            let dogBreed = document.createElement('li')
-            changeDogBreedItemColor(dogBreed)
-            dogBreed.innerText = breed
-            breedList.appendChild(dogBreed)
-        }
-    })
+    breedsList.appendChild(breedListItem)
 }
 
-function changeDogBreedItemColor(element) {    
-    element.addEventListener('click', function() {
-        element.style.color = 'red';
-    })
-}
-
-function filterDogBreed() {
-    let dropdownFilterValue = document.getElementById('breed-dropdown').value
-    let breedList = document.getElementById('dog-breeds')
+const breedColor = () => {
     let breedListItems = document.getElementsByTagName('li')
 
-    for (let i = 0; i < breedListItems.length; i++) {
-        if (dropdownFilterValue === 'a' && breedListItems[i].textContent[0] === 'a') { 
-            console.log(breedListItems[i])
-        } else if (dropdownFilterValue === 'b' && breedListItems[i].textContent[0] === 'b') {
-            console.log(breedListItems[i])
-        } else if (dropdownFilterValue === 'c' && breedListItems[i].textContent[0] === 'c') {
-            console.log(breedListItems[i])
-        } else if (dropdownFilterValue === 'd' && breedListItems[i].textContent[0] === 'd') {
-            console.log(breedListItems[i])
-        }   
+    for (const breedListItem of breedListItems) {
+        breedListItem.addEventListener('click', (event) => {
+            breedListItem.style.color = 'red'
+        })
     }
+}
+
+const filterBreedList = () => {
+    let select = document.getElementById('breed-dropdown')
+    let breedListItems = document.querySelectorAll('li')
+    
+    select.addEventListener('change', (event) => {
+        let selectValue = select.value
+        
+        breedListItems.forEach(breed => {
+            if (breed.innerText[0] === selectValue) {
+                breed.style.display = 'block'
+            } else {
+                breed.style.display = 'none'
+            }
+        })
+    })
+}
+
+const getBreeds = () => {
+    fetch(breedUrl)
+        .then(response => {
+            return response.json()
+        })
+        .then(dogBreeds => {
+            const dogBreedsArray = dogBreeds['message']
+
+            for (const breed in dogBreedsArray) {
+                dogBreed(breed)
+            }
+            breedColor()
+            filterBreedList()          
+        })
 }
 
 main()
